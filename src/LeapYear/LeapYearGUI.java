@@ -13,21 +13,35 @@ public class LeapYearGUI extends JFrame{
         btnCheckYear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int year = Integer.parseInt(tfYear.getText());
-                boolean leap;
+                try {
+                    if(tfYear.getText().equals("")){
+                        throw (new InvalidInputException("Please input a year."));
+                    } else if (Integer.parseInt(tfYear.getText()) < 0){
+                        throw (new InvalidInputException("Input must be a year."));
+                    }
 
-                if (year % 4 == 0) {
-                    if (year % 100 == 0) {
-                        leap = year % 400 == 0;
+                    int year = Integer.parseInt(tfYear.getText());
+                    boolean leap;
+
+                    if (year % 4 == 0) {
+                        if (year % 100 == 0) {
+                            leap = year % 400 == 0;
+                        } else
+                            leap = true;
                     } else
-                        leap = true;
-                } else
-                    leap = false;
+                        leap = false;
 
-                if (leap)
-                    JOptionPane.showMessageDialog(panel1, "Leap year");
-                else
-                    JOptionPane.showMessageDialog(panel1, "Not a leap year");
+                    if (leap)
+                        JOptionPane.showMessageDialog(panel1, "Leap year");
+                    else
+                        JOptionPane.showMessageDialog(panel1, "Not a leap year");
+                }
+                catch(InvalidInputException x) {
+                    JOptionPane.showMessageDialog(panel1, x.getMessage());
+                }
+                catch(NumberFormatException x) {
+                    JOptionPane.showMessageDialog(panel1, "Input must be a year.");
+                }
             }
         });
     }
@@ -39,5 +53,11 @@ public class LeapYearGUI extends JFrame{
         leapYear.setSize(450,300);
         leapYear.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         leapYear.setVisible(true);
+    }
+
+    public static class InvalidInputException extends Exception {
+        public InvalidInputException(String s) {
+            super(s);
+        }
     }
 }
