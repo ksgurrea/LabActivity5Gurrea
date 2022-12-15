@@ -22,6 +22,7 @@ public class FoodOrderGUI extends JFrame{
     private JRadioButton rb15;
     List<JCheckBox> Foods;
     List<JRadioButton> Discounts;
+
     public FoodOrderGUI() {
         Foods = new ArrayList<>();
         Foods.add(cPizza);
@@ -39,8 +40,19 @@ public class FoodOrderGUI extends JFrame{
         btnOrder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DecimalFormat df = new DecimalFormat(".00");
-                JOptionPane.showMessageDialog(panel1, "The total price is Php " + df.format(discountedTotalPrice()));
+                try {
+                    DecimalFormat df = new DecimalFormat(".00");
+
+                    if(sumOfFoods() == 0)
+                        throw (new NoFoodSelectedException("Please select a food."));
+                    else if(discountedTotalPrice() == 0)
+                        throw (new NoDiscountSelectedException("Please select a discount promo."));
+                    else
+                        JOptionPane.showMessageDialog(panel1, "The total price is Php " + df.format(discountedTotalPrice()));
+                }
+                catch(NoFoodSelectedException | NoDiscountSelectedException x){
+                    JOptionPane.showMessageDialog(panel1, x.getMessage());
+                }
             }
         });
     }
@@ -54,46 +66,58 @@ public class FoodOrderGUI extends JFrame{
         order.setVisible(true);
     }
 
-        public int sumOfFoods() {
-            int sum = 0;
-            for (JCheckBox cb : Foods) {
-                if (cb.isSelected()) {
-                    if (cb.equals(cPizza)) {
-                        sum += 100;
-                    } else if (cb.equals(cBurger)) {
-                        sum += 80;
-                    } else if (cb.equals(cFries)) {
-                        sum += 65;
-                    } else if (cb.equals(cSoftDrinks)) {
-                        sum += 55;
-                    } else if (cb.equals(cTea)) {
-                        sum += 50;
-                    } else if (cb.equals(cSundae)) {
-                        sum += 40;
-                    }
+    public int sumOfFoods() {
+        int sum = 0;
+        for (JCheckBox cb : Foods) {
+            if (cb.isSelected()) {
+                if (cb.equals(cPizza)) {
+                    sum += 100;
+                } else if (cb.equals(cBurger)) {
+                    sum += 80;
+                } else if (cb.equals(cFries)) {
+                    sum += 65;
+                } else if (cb.equals(cSoftDrinks)) {
+                    sum += 55;
+                } else if (cb.equals(cTea)) {
+                    sum += 50;
+                } else if (cb.equals(cSundae)) {
+                    sum += 40;
                 }
             }
-            return sum;
         }
+        return sum;
+    }
 
-        public double discountedTotalPrice(){
-            double total;
-            for (JRadioButton rb : Discounts) {
-                if (rb.isSelected()) {
-                    if (rb.equals(rbNone)) {
-                        return sumOfFoods();
-                    } else if (rb.equals(rb5)) {
-                        total = sumOfFoods() - (sumOfFoods() * 0.05);
-                        return total;
-                    } else if (rb.equals(rb10)) {
-                        total = sumOfFoods() - (sumOfFoods() * 0.10);
-                        return total;
-                    } else if (rb.equals(rb15)) {
-                        total = sumOfFoods() - (sumOfFoods() * 0.15);
-                        return total;
-                    }
+    public double discountedTotalPrice(){
+        double total;
+        for (JRadioButton rb : Discounts) {
+            if (rb.isSelected()) {
+                if (rb.equals(rbNone)) {
+                    return sumOfFoods();
+                } else if (rb.equals(rb5)) {
+                    total = sumOfFoods() - (sumOfFoods() * 0.05);
+                    return total;
+                } else if (rb.equals(rb10)) {
+                    total = sumOfFoods() - (sumOfFoods() * 0.10);
+                    return total;
+                } else if (rb.equals(rb15)) {
+                    total = sumOfFoods() - (sumOfFoods() * 0.15);
+                    return total;
                 }
             }
-            return 0;
         }
+        return 0;
+    }
+
+    public static class NoDiscountSelectedException extends Exception {
+        public NoDiscountSelectedException (String s){
+            super(s);
+        }
+    }
+
+    public static class NoFoodSelectedException extends Exception {
+        public NoFoodSelectedException(String s) {
+            super(s);
+        }
+    }
 }
